@@ -67,7 +67,7 @@ De esta forma, utilizando Puppeteer y el DOM, podremos programar el comportamien
 En este proyecto el primero de nuestros retos es rellenar el formulario de inicio de sesión rellenando la información sobre el DNI y la fecha de nacimiento,
 por lo que vamos a inspeccionar el código de la web para conocer la información del formulario:
 
-<img src="./assets/inspeccionar_login.png" width="400" height="300">
+<img src="./assets/inspeccionar_login.png" width="300" height="300">
 
 A continuación veremos mucho código HTML pero si nos centramos en el elemento HTML 
 resaltado podemos ver que es un **input** de tipo **text** con un identificador **id="ing-uic-native-input-0"**. 
@@ -78,7 +78,7 @@ Con esta información, interactuar con el elemento para introducir nuestro DNI s
     inputElement.value = "11111111A"
 ```
 
-<img src="./assets/inspeccionar_login.png" width="500" height="400">
+<img src="./assets/login_dni_input_html.png" >
 
 Desafortunadamente la realidad no es tan bonita y acceder por el identificador no es tan directo debido a que en esta 
 parte de la web de ING Direct utilizan WebComponents. Esta tecnología permite encapsular funcionalidades (HTML, CSS, JS) en forma de 
