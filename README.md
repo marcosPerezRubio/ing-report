@@ -163,7 +163,8 @@ Desglosemos el código paso a paso:
 #### Conocer las posiciones
 Para saber qué posiciones tenemos que rellenar, vamos a inspeccionar el código HTML para ver si tenemos alguna pista y... Bingo! Resulta que hay un texto 
 oculto que nos indica exactamente qué posiciones rellenar.
-<img src="./assets/security_code_secret_positions">
+
+<img src="./assets/security_code_secret_positions.png">
 
 
 #### Conseguir el código para cada posición
@@ -177,6 +178,9 @@ el código otra vez y tal y como podemos observar, para cada dígito posible ten
 Así, la clave número 2 está en el slot número 1, la clave 1 en el dos y así sucesivamente. Por tanto, tenemos que buscar qué "slots" 
 corresponden a cada número para luego pulsarlos. En este caso, tenemos que pulsar los slots 4, 7 y 8 que corresponden a los dígitos 
 6, 5 y 4 que nos han solicitado.
+
+<img src="./assets/security_code_keyboard.png">
+
 
 En la función **fillSecurityCode** está la lógica que realiza este paso. Una vez ejecutado, ya hemos completado la fase de login y pasamos al dashboard principal de la web.
  
