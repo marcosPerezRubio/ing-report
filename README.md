@@ -169,12 +169,13 @@ oculto que nos indica exactamente qué posiciones rellenar.
 
 #### Conseguir el código para cada posición
 Pongamos, por ejemplo, que nuestro código de seguridad es el 987654: si nos piden las posiciones 4,5 y 6 tan sólo tenemos que ir a a nuestra clave y buscar el dígito correspondiente.
-Cómo en la mayoría de lenguajes, en JavaScript las posiciones empiezan en el 0, así que en este caso tendríamos que acceder a las casillas 3,4 y 5.
+Como en la mayoría de lenguajes, en JavaScript las posiciones empiezan en el índice 0 así que en este caso tendríamos que acceder a las casillas 3,4 y 5.
 Como ya conocemos la clave de antemano, es trivial quedarnos con los dígitos "6", "5" y "4" de nuestra clave.
 
 #### Pulsar los botones adecuados
 Ahora, ya solo nos queda encontrar la posición de cada botón para pulsar el número correcto. Para ello inspeccionamos 
 el código otra vez y tal y como podemos observar, para cada dígito posible tenemos un "slot" que indica qué posición es en el teclado.
+
 Así, la clave número 2 está en el slot número 1, la clave 1 en el dos y así sucesivamente. Por tanto, tenemos que buscar qué "slots" 
 corresponden a cada número para luego pulsarlos. En este caso, tenemos que pulsar los slots 4, 7 y 8 que corresponden a los dígitos 
 6, 5 y 4 que nos han solicitado.
