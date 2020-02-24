@@ -21,7 +21,7 @@ y un resumen de lo que he gastado el mes actual, agrupado por categorías.
 De esta forma, recibo en mi bandeja de entrada la evolución de mis gastos, sin necesidad de entrar en la web del banco.
 
 A lo largo de este artículo veremos:
-- **Cómo funciona el programa:** Cuál es la estructura de la web de ING y cómo conseguir nuestro objetivo utilizando Puppeteer.
+- **Cómo funciona el programa:** Cuál es la estructura de la web de ING y cómo conseguir nuestro objetivo utilizando [Puppeteer](https://github.com/puppeteer/puppeteer).
 - **Qué inconvenientes me he encontrado:** shadowDom, tiempos de espera y enviar el correo utilizando Gmail.
 - **Cómo poner todo el sistema en producción de forma óptima:** AWS Lambda, AWS Lambda Layers, CloudWatch Events y unos scripts en bash para publicar el código y gestionar las dependencias.
 
@@ -81,7 +81,7 @@ Con esta información, interactuar con el elemento para introducir nuestro DNI s
 <img src="./assets/login_dni_input_html.png" >
 
 Desafortunadamente la realidad no es tan bonita y acceder por el identificador no es tan directo debido a que en esta 
-parte de la web de ING Direct utilizan WebComponents. Esta tecnología permite encapsular funcionalidades (HTML, CSS, JS) en forma de 
+parte de la web de ING Direct está programada con Polymer y por tanto, utiliza WebComponents. Esta tecnología permite encapsular funcionalidades (HTML, CSS, JS) en forma de 
  componentes con el objetivo de organizar, aislar y reutilizar código y comportamiento de forma más sencilla.
   
 Una de las implicaciones que conlleva es que cada componente se crea en un árbol DOM nuevo que luego se incluye en el árbol DOM principal,
@@ -104,9 +104,83 @@ Esto no es ni bonito ni cómodo de gestionar ya que cada vez que cambie la estru
 esta línea de código... ¡Y esto sólo para un único elemento!
 
 Cómo seguramente no soy la primera persona del mundo con este problema, me puse a buscar cómo solucionarlo y encontré la librería 
-[query-selector-shadow-dom](https://www.npmjs.com/package/query-selector-shadow-dom), que se encarga de encontrar los elementos sin 
-necesitar del camino completo. Tan sólo tenemos que instalar la librería, cargarla en Puppeteer y utilizar las funciones que nos proporcionan.
-En el fichero shadow-dom-utils.js encontraréis varias funciones de utilidad que abstraen la lógica de leer y escribir en elementos HTML en el shadow DOM.
+[query-selector-shadow-dom](https://www.npmjs.com/package/query-selector-shadow-dom) que se encarga de encontrar los elementos sin 
+necesidad de especificar el camino completo. Tan sólo tenemos que instalar la librería, cargarla en Puppeteer y utilizar las funciones que nos proporcionan.
+En el fichero [shadow-dom-utils.js](./lib/utils/shadow-dom-utils.js) encontraréis varias funciones de utilidad que abstraen la lógica de leer y escribir en elementos HTML en el shadow DOM.
+
+A partir de aquí empezamos a desgranar el código y a comentar las diferentes fases que hemos introducido anteriormente:
+
+### Visión general
+La función principal es **ingReport**, que realiza todas las acciones necesarias para llevar a cabo el proceso. Es prácticamente autoexplicativa 
+por lo que nos centraremos en comentar cada una de las funciones internas que la forman.
+
+<img src="assets/code/main_function.png">
+
+### Inicialización: La función initPage
+El inicio del proceso es sencillo y es prácticamente el mismo para todos los scripts con Puppeteer: iniciar el navegador, crear una nueva página 
+página del tamaño que queramos y cargar la URL que nos interesa. 
+
+<img src="assets/code/init_page.png">
+
+La clave de esta función, está en cargar la librería que necesitaremos para consultar los elementos del Shadow DOM para tenerla disponible 
+cuando sea necesario. Es importante cargarla una vez estemos en la URL que nos interesa para las funciones que nos proporciona sean accesibles.
+
+Como hemos instalado la librería con NPM, la encontraremos en la carpeta node_modules del proyecto. Concretamente, la instrucción 
+para cargarla en el navegador es:
+```
+    page.addScriptTag({path: path.join(process.cwd(), 'node_modules/query-selector-shadow-dom/dist/querySelectorShadowDom.js')});
+```
+
+A partir de aquí ya tenemos nuestra página inicializada y correctamente configurada.
+
+### Login: La función doLogin
+Ahora ya estamos frente al formulario de login en el que tenemos que insertar nuestros datos personales y pulsar el botón de "Entrar".
+Para ello, utilizamos las funciones de utilidad que comentaba anteriormente. Como podéis ver el código sigue siendo autoexplicativo a 
+excepción de la primera línea, dónde esperamos tres segundos para asegurarnos que la web ha acabado de cargar. Idealmente, esto lo haríamos
+con alguno de los métodos que proporciona Puppeteer, pero debido al shadow dom, el resultado no es tan elegante como cabría esperar. 
+Por ello, decido utilizar esta técnica, que si bien no es la más eficiente, es la que más legibilidad proporciona.
+
+Como la seguridad es uno de los aspectos más importantes a tener en cuenta, y tampoco quiero compartir mis datos bancarios con todo el mundo
+las variables referentes a la información personal, se definen utilizando variables de entorno, por lo que no están en el código 
+y no son accesibles a terceras personas. Más adelante explicaremos cómo hacerlo. 
+
+<img src="assets/code/do_login.png">
+
+### Código de seguridad: La función fillSecurityCode
+Este quizás es uno de los puntos más interesantes del proyecto ya que parece la medida estrella en múltiples plataformas:
+introducir unos dígitos concretos de una clave que sólo sabemos nosotros y que van cambiando en cada intento. Además, en este caso, tenemos 
+que utilizar el teclado que nos proporciona ING, que también va cambiando.
+
+Si planteamos este proceso de la misma forma que lo haríamos cuando queremos entrar utilizando la aplicación llegaríamos al siguiente algoritmo:
+- Conocer qué posiciones de nuestra clave nos están pidiendo
+- Para cada posición, pensar en el dígito equivalente de nuestro clave.
+- Buscar el dígito en el teclado y pulsarlo.
+
+Aunque parece una tontería, el reto reside en cómo adivinamos qué posiciones nos piden y, una vez tenemos los dígitos, cómo los encontramos en el teclado.
+
+Desglosemos el código paso a paso:
+
+#### Conocer las posiciones
+Para saber qué posiciones tenemos que rellenar, vamos a inspeccionar el código HTML para ver si tenemos alguna pista y... Bingo! Resulta que hay un texto 
+oculto que nos indica exactamente qué posiciones rellenar.
+<img src="./assets/security_code_secret_positions">
+
+
+#### Conseguir el código para cada posición
+Pongamos, por ejemplo, que nuestro código de seguridad es el 987654: si nos piden las posiciones 4,5 y 6 tan sólo tenemos que ir a a nuestra clave y buscar el dígito correspondiente.
+Cómo en la mayoría de lenguajes, en JavaScript las posiciones empiezan en el 0, así que en este caso tendríamos que acceder a las casillas 3,4 y 5.
+Como ya conocemos la clave de antemano, es trivial quedarnos con los dígitos "6", "5" y "4" de nuestra clave.
+
+#### Pulsar los botones adecuados
+Ahora, ya solo nos queda encontrar la posición de cada botón para pulsar el número correcto. Para ello inspeccionamos 
+el código otra vez y tal y como podemos observar, para cada dígito posible tenemos un "slot" que indica qué posición es en el teclado.
+Así, la clave número 2 está en el slot número 1, la clave 1 en el dos y así sucesivamente. Por tanto, tenemos que buscar qué "slots" 
+corresponden a cada número para luego pulsarlos. En este caso, tenemos que pulsar los slots 4, 7 y 8 que corresponden a los dígitos 
+6, 5 y 4 que nos han solicitado.
+
+En la función **fillSecurityCode** está la lógica que realiza este paso. Una vez ejecutado, ya hemos completado la fase de login y pasamos al dashboard principal de la web.
+ 
+
 
 ... Work in progress ...
 
@@ -119,4 +193,6 @@ En el fichero shadow-dom-utils.js encontraréis varias funciones de utilidad que
     - Schedule with cloudwatch events
     - Bash scripts utils
 
-- References
+### Referencias
+- [GitHub - Better support for Shadow DOM](https://github.com/puppeteer/puppeteer/issues/4171)
+- [GitHub - Querying nodes within shadow roots](https://github.com/puppeteer/puppeteer/issues/858)
