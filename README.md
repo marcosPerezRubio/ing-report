@@ -42,13 +42,13 @@ Una vez dentro, realizaremos una captura del gráfico por categorías.
 
 <img src="./assets/ejemplo_gastos.png" width="500" height="250">
 
-### Show me the code!
+### Conceptos clave
 
-Ahora que ya tenemos claro qué información queremos y de dónde conseguirla, pasemos a la acción; pero antes introduciremos los conceptos clave:
+Ahora ya tenemos claro qué información queremos y dónde podemos consultarla, pero comentemos los conceptos clave antes de ver el código.
 
 #### Puppeteer
 
-En resumen, Puppeteer es una librería para Node.JS que sirve para controlar los navegadores Chrome y Chromium mediante código con lo que podemos automatizar 
+Puppeteer es una librería para Node.JS que sirve para controlar los navegadores Chrome y Chromium mediante código con lo que podemos automatizar 
 todo tipo de acciones y comportamiento tal y como haría un usuario real.
 
 #### DOM, selectores y shadow DOM
@@ -109,7 +109,7 @@ En el fichero [shadow-dom-utils.js](./lib/utils/shadow-dom-utils.js) encontraré
 
 A partir de aquí empezamos a desgranar el código y a comentar las diferentes fases que hemos introducido anteriormente:
 
-### Visión general
+### Show me the code!
 La función principal es **ingReport**, que realiza todas las acciones necesarias para llevar a cabo el proceso. Es prácticamente autoexplicativa 
 por lo que nos centraremos en comentar cada una de las funciones internas que la forman.
 
@@ -130,8 +130,8 @@ para cargarla en el navegador es:
     page.addScriptTag({path: path.join(process.cwd(), 'node_modules/query-selector-shadow-dom/dist/querySelectorShadowDom.js')});
 ```
 
-A partir de aquí ya tenemos nuestra página inicializada y correctamente configurada. Hay que tener cuidado ya que si a lo largo del proceso,
-decidiéramos navegar a otra URL, tendríamos que cargar otra vez el script.
+A partir de aquí ya tenemos nuestra página inicializada y correctamente configurada. Hay que tener cuidado ya que si a lo largo del proceso
+decidiéramos navegar a otra URL tendríamos que cargar otra vez el script.
 
 ### Login: La función doLogin
 Ahora ya estamos frente al formulario de login en el que tenemos que insertar nuestros datos personales y pulsar el botón de "Entrar".
