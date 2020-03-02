@@ -87,7 +87,7 @@ Una de las implicaciones que conlleva es que cada componente se crea en un árbo
 y esto conlleva que la navegación no sea tan senzilla. Si hacemos click derecho en el elemento que habíamos inspeccionado antes, se desplegará un menú 
 que nos permitirá copiar en el portapapeles el código necesario para referenciar al elemento.
 
-<img src="./assets/login_dni_input_selector.png" height="400">
+<img src="./assets/login_dni_input_selector.png">
 
 El resultado es el mostrado a continuación: una mezcla de selectores y accesos al shadowDom desde el inicio del árbol principal. 
 
