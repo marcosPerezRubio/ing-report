@@ -5,11 +5,9 @@ A simple project that login to the Ing website and sends an email report with th
 ## Motivación
 Hace unos meses empecé a interesarme en lo relativo a la educación financiera con el objetivo de aumentar la capacidad de ahorro y ser más consciente de los gastos diarios.
 
-Después de estar probando excels de presupuestos y aplicaciones varias, decidí utilizar el método propuesto por **YouNeedABudget** que se basa en asignar a cada € un "uso":
-sea para la compra en el supermercado, las vacaciones de verano, el coche, el máster, un capricho... 
-
-De esta forma cuando tengamos que hacer un gasto imprevisto, tendremos que retirar ese dinero de alguno de los presupuestos ya realizados y por ende, seremos 
-más conscientes de cómo gastamos el dinero.
+Después de estar probando excels de presupuestos y aplicaciones varias, decidí utilizar el método propuesto por **YouNeedABudget** que se basa en asignar a cada euro un "uso":
+ya sea para la compra en el supermercado, las vacaciones, los estudios, a modo de ejemplo. De esta forma cuando tengamos que hacer un gasto imprevisto, tendremos que retirar ese dinero de alguno de los presupuestos ya realizados y por ende, seremos 
+más conscientes de cómo y en qué invertimos el dinero.
 
 Si bien la teoría es interesante, a la práctica es un método que requiere mucho tiempo, por lo que decidí enfocarlo de otra forma: 
 conocer el gasto actual para corregir las desviaciones y tener un mayor control sobre el dinero disponible.
