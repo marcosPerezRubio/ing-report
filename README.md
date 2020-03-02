@@ -13,7 +13,6 @@ más conscientes de cómo gastamos el dinero.
 
 Si bien la teoría es interesante, a la práctica es un método que requiere mucho tiempo, por lo que decidí enfocarlo de otra forma: 
 conocer el gasto actual para corregir las desviaciones y tener un mayor control sobre el dinero disponible.
-
 Por ello, decidí automatizar el proceso de consulta creando un programa que inicia sesión en la web de mi banco (ING) y 
 genera un informe de gastos que se envía cada semana por correo. Este informe incluye el total disponible en la cuenta 
 y un resumen de lo que he gastado el mes actual, agrupado por categorías.
@@ -64,7 +63,7 @@ para seleccionar los elementos HTML de una web.
   
 De esta forma, utilizando Puppeteer y el DOM, podremos programar el comportamiento que deseemos.
 
-En este proyecto el primero de nuestros retos es rellenar el formulario de inicio de sesión rellenando la información sobre el DNI y la fecha de nacimiento,
+En este proyecto el primero paso es rellenar el formulario de inicio de sesión rellenando la información sobre el DNI y la fecha de nacimiento,
 por lo que vamos a inspeccionar el código de la web para conocer la información del formulario:
 
 <img src="./assets/inspeccionar_login.png" width="300" height="300">
@@ -80,12 +79,12 @@ Con esta información, interactuar con el elemento para introducir nuestro DNI s
 
 <img src="./assets/login_dni_input_html.png" >
 
-Desafortunadamente la realidad no es tan bonita y acceder por el identificador no es tan directo debido a que en esta 
+Desafortunadamente la realidad no es tan simple, pues acceder por el identificador no es tan directo debido a que esta 
 parte de la web de ING Direct está programada con Polymer y por tanto, utiliza WebComponents. Esta tecnología permite encapsular funcionalidades (HTML, CSS, JS) en forma de 
  componentes con el objetivo de organizar, aislar y reutilizar código y comportamiento de forma más sencilla.
   
 Una de las implicaciones que conlleva es que cada componente se crea en un árbol DOM nuevo que luego se incluye en el árbol DOM principal,
-y esto provoca que la navegación no sea tan senzilla. Si hacemos click derecho en el elemento que habíamos inspeccionado antes, se desplegará un menú 
+y esto conlleva que la navegación no sea tan senzilla. Si hacemos click derecho en el elemento que habíamos inspeccionado antes, se desplegará un menú 
 que nos permitirá copiar en el portapapeles el código necesario para referenciar al elemento.
 
 <img src="./assets/login_dni_input_selector.png" width="500" height="400">
@@ -100,7 +99,7 @@ El resultado es el mostrado a continuación: una mezcla de selectores y accesos 
         .shadowRoot.querySelector("#ing-uic-native-input_0")
 ```
 
-Esto no es ni bonito ni cómodo de gestionar ya que cada vez que cambie la estructura de la página web tendremos que modificar
+Como es de suponer, esto no es ágil ni cómodo de gestionar dado que cada vez que cambie la estructura de la página web tendremos que modificar
 esta línea de código... ¡Y esto sólo para un único elemento!
 
 Cómo seguramente no soy la primera persona del mundo con este problema, me puse a buscar cómo solucionarlo y encontré la librería 
@@ -185,18 +184,48 @@ corresponden a cada número para luego pulsarlos. En este caso, tenemos que puls
 
 En la función **fillSecurityCode** está la lógica que realiza este paso. Una vez ejecutado, ya hemos completado la fase de login y pasamos al dashboard principal de la web.
  
+**IMPORTANTE:** Cómo comentaba anteriormente sólo la parte del login está hecha con el framework Polymer, pero no el dashboard prinpipal. Esto implica que ya no tenemos que 
+preocuparnos por el shadow DOM y el acceso a los elementos se vuelve más directo.
 
 
-... Work in progress ...
+### Aceptar las cookies: La función acceptCookies
+Como viene siendo habitual en todas las páginas web siempre que entramos tenemos la obligación de configurar nuestras preferencias 
+en cuanto a las cookies se refiere, y en este caso no iba a ser diferente. Para ello, sólo debemos hacer click en el botón de aceptar:
 
-- Nodemailer for sending email - gmail unsecure app
+```
+async function acceptCookies(page) {
+    await page.waitFor(15000);
+    await page.click('#aceptar');
+}
+```
 
-### Deploy en AWS
-- Deploy to aws
-    - Deploy without serverless
-    - Dependencies & size limits & lambda layer
-    - Schedule with cloudwatch events
-    - Bash scripts utils
+
+#### Conseguir el saldo actual: La función getCurrentBalance
+Antes de llegar al apartado del informe aprovechamos para guardarnos el saldo actual de nuestras cuentas:
+
+```
+async function getCurrentBalance(page) {
+    const element = await page.$('p.h1.clr-dark-orange.amount');
+    return (await page.evaluate(element => element.textContent, element))
+}
+```
+
+#### Captura de pantalla de los gastos: La función generateReportExpensesReport
+
+
+
+
+### Documentation TODOs
+- [ ] Nodemailer for sending email - gmail unsecure app
+- [ ] Deploy to aws
+- [ ] Deploy without serverless
+- [ ] Dependencies & size limits & lambda layer
+- [ ] Schedule with cloudwatch events
+- [ ] Bash scripts utils
+
+
+### Project TODOs
+- [ ] Enviar un informe más completo a cierre del mes
 
 ### Referencias
 - [GitHub - Better support for Shadow DOM](https://github.com/puppeteer/puppeteer/issues/4171)
