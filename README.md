@@ -37,7 +37,7 @@ Ya en el dashboard principal, aprovechamos para guardanos el balance actual.
 
 <img src="./assets/dashboard_principal.png" width="500" height="400">
 
-Para entrar detalle de los gastos, sólo teenemos que hacer click en el mes actual de la sección "Mis gastos".
+Para entrar detalle de los gastos tenemos que hacer click en el mes actual, que aparece en la sección "Mis gastos".
 Una vez dentro, realizaremos una captura del gráfico por categorías.
 
 <img src="./assets/ejemplo_gastos.png" width="500" height="250">
@@ -130,7 +130,8 @@ para cargarla en el navegador es:
     page.addScriptTag({path: path.join(process.cwd(), 'node_modules/query-selector-shadow-dom/dist/querySelectorShadowDom.js')});
 ```
 
-A partir de aquí ya tenemos nuestra página inicializada y correctamente configurada.
+A partir de aquí ya tenemos nuestra página inicializada y correctamente configurada. Hay que tener cuidado ya que si a lo largo del proceso,
+decidiéramos navegar a otra URL, tendríamos que cargar otra vez el script.
 
 ### Login: La función doLogin
 Ahora ya estamos frente al formulario de login en el que tenemos que insertar nuestros datos personales y pulsar el botón de "Entrar".
@@ -184,8 +185,8 @@ corresponden a cada número para luego pulsarlos. En este caso, tenemos que puls
 
 En la función **fillSecurityCode** está la lógica que realiza este paso. Una vez ejecutado, ya hemos completado la fase de login y pasamos al dashboard principal de la web.
  
-**IMPORTANTE:** Cómo comentaba anteriormente sólo la parte del login está hecha con el framework Polymer, pero no el dashboard prinpipal. Esto implica que ya no tenemos que 
-preocuparnos por el shadow DOM y el acceso a los elementos se vuelve más directo.
+**IMPORTANTE:** Cómo comentaba anteriormente sólo la parte del login está hecha con el framework Polymer, pero no el dashboard principal por lo que no tenemos que 
+preocuparnos por el shadow DOM y en consecuencia, el acceso a los elementos se vuelve más directo.
 
 
 ### Aceptar las cookies: La función acceptCookies
