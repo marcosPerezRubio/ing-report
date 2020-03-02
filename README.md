@@ -119,7 +119,7 @@ por lo que nos centraremos en comentar cada una de las funciones internas que la
 El inicio del proceso es sencillo y es prácticamente el mismo para todos los scripts con Puppeteer: iniciar el navegador, crear una nueva página 
 página del tamaño que queramos y cargar la URL que nos interesa. 
 
-<img src="assets/code/init_page.png">
+<img src="assets/code/init_page.png" width="300">
 
 La clave de esta función, está en cargar la librería que necesitaremos para consultar los elementos del Shadow DOM para tenerla disponible 
 cuando sea necesario. Es importante cargarla una vez estemos en la URL que nos interesa para las funciones que nos proporciona sean accesibles.
