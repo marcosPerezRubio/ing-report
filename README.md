@@ -273,14 +273,14 @@ npm install --save nodemailer
 Ahora sólo nos queda ejecutar el programa, veréis que hay dos puntos de entrada: **index.js** y **cli.js**, que sirven
 para la ejecución en Lambda y desde consola, respectivamente. Centrémonos en el segundo. Recordad que para ejecutarlo 
 hay que indicar las variables de entorno:
-- DNI: Nuestro DNI, con letra incluída.
-- DAY_OF_BIRTH: El día de nuestro nacimiento en formato **DD**.
-- MONTH_OF_BIRTH: El mes de nuestro nacimiento en formato **MM**.
-- YEAR_OF_BIRTH: El año de nuestro nacimiento en formato **YYYY**.
-- CODE: Nuestra contraseña de 6 dígitos. El código se encargará de transformarla en un Array con el que trabajar.
-- EMAIL_FROM: Dirección que hemos creado para enviar la contraseña.
-- EMAIL_PWD: Contraseña del correo.
-- EMAIL_TO: La dirección de correo donde recibir el correo.
+- **DNI:** Nuestro DNI, con letra incluída.
+- **DAY_OF_BIRTH:** El día de nuestro nacimiento en formato **DD**.
+- **MONTH_OF_BIRTH:** El mes de nuestro nacimiento en formato **MM**.
+- **YEAR_OF_BIRTH:** El año de nuestro nacimiento en formato **YYYY**.
+- **CODE:** Nuestra contraseña de 6 dígitos. El código se encargará de transformarla en un Array con el que trabajar.
+- **EMAIL_FROM:** Dirección que hemos creado para enviar la contraseña.
+- **EMAIL_PWD:** Contraseña del correo.
+- **EMAIL_TO:** La dirección de correo donde recibir el correo.
 
 Con esto definido, el comando quedaría algo parecido a la siguiente línea (nótese que he emitido ciertas variables por legibilidad):
 
