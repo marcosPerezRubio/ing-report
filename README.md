@@ -199,7 +199,7 @@ async function acceptCookies(page) {
 ```
 
 
-#### Conseguir el saldo actual: La función getCurrentBalance
+### Conseguir el saldo actual: La función getCurrentBalance
 Antes de llegar al apartado del informe aprovechamos para guardarnos el saldo actual de nuestras cuentas:
 
 ```
@@ -209,13 +209,84 @@ async function getCurrentBalance(page) {
 }
 ```
 
-#### Captura de pantalla de los gastos: La función generateReportExpensesReport
+### Captura de pantalla de los gastos
+Este es el paso final para conseguir toda la información necesaria para realizar el informe: vamos a realizar una captura de pantalla 
+del gráfico que agrupa nuestros gastos por categorías y guardaremos la imagen en el sistema de ficheros.
+
+Echemos un vistazo a la función **generateExpensesReport**, en ella vamos al apartado donde se encuentra el gráfico y en caso de que 
+debamos desplegar los conceptos que aparecen (por defecto no se muestran todos) pulsamos el botón de *see more*, para luego realizar la 
+la captura de pantalla.
+
+<img src="assets/code/generateExpensesReport.png">
+
+En la función **screenshotDOMElement**, dado un selector y un path, se genera una imagen y se almacena en el sistema de ficheros. Esta 
+función la he conseguido de [Serg Hosporadets](https://gist.github.com/malyw/b4e8284e42fdaeceab9a67a9b0263743), funciona perfectamente y 
+así, evito reinventar la rueda 😉. La imagen la guardamos en la carpeta **tmp** para poder acceder a ella también desde la función Lambda, 
+tal y como se explica en la [documentación](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-context.html). 
+
+<img src="assets/code/screenshotDOMElement.png">
 
 
+## Enviar el informe por correo
+Para enviar el informe por correo utilizaremos un correo de gmail la librería Nodemailer, que nos proporciona la abstracción 
+necesaria para utilizar el protocolo SMTP de forma sencilla. Especificaremos tres variables:
+- Email y contraseña desde el que enviar el informe.
+- Email donde recibir el informe.  
+
+Para poder enviar correos desde gmail utilizando contraseña, tendremos que activar la opción **Less secure apps** desde el 
+panel de administración, en [este enlace](https://hotter.io/docs/email-accounts/secure-app-gmail/) encontraréis las instrucciones 
+paso a paso.
+
+Una vez configurada y definidas las variables, utilizamos una función que incluye el saldo disponible en el cuerpo del mensaje, 
+y el gráfico de gastos como imagen adjunta. Una vez enviado el informe, se borrará la imagen creada en el sistema de ficheros. 
+Toda esta lógica se encuentra en el fichero [email.js](./lib/utils/email.js).
+
+## Cómo empezar de cero
+Ahora que tenemos todo el proceso claro, veamos como empezar con este proyecto desde cero. 
+
+
+Primero, tenemos que instalar las dependencias necesarias:
+
+
+Instalamos puppeteer para poder realizar el scrapping. Debido a que se descarga el binario de Chromium, esto 
+puede tardar un poco, así que tened paciencia.
+```
+npm install --save puppeteer 
+```
+
+
+También debemos instalar la librería de utilidad para trabajar con el shadowDOM de forma transparente.
+```
+npm install --save query-selector-shadow-dom
+```
+
+Por último, instalamos la librería para enviar los correos.
+```
+npm install --save nodemailer
+```
+
+Ahora sólo nos queda ejecutar el programa, veréis que hay dos puntos de entrada: **index.js** y **cli.js**, que sirven
+para la ejecución en Lambda y desde consola, respectivamente. Centrémonos en el segundo. Recordad que para ejecutarlo 
+hay que indicar las variables de entorno:
+- DNI: Nuestro DNI, con letra incluída.
+- DAY_OF_BIRTH: El día de nuestro nacimiento en formato **DD**.
+- MONTH_OF_BIRTH: El mes de nuestro nacimiento en formato **MM**.
+- YEAR_OF_BIRTH: El año de nuestro nacimiento en formato **YYYY**.
+- CODE: Nuestra contraseña de 6 dígitos. El código se encargará de transformarla en un Array con el que trabajar.
+- EMAIL_FROM: Dirección que hemos creado para enviar la contraseña.
+- EMAIL_PWD: Contraseña del correo.
+- EMAIL_TO: La dirección de correo donde recibir el correo.
+
+Con esto definido, el comando quedaría algo parecido a la siguiente línea (nótese que he emitido ciertas variables por legibilidad):
+
+```
+DNI=123123123A DAY_OF_BIRH=01 MONTH_OF_BIRTH=01 YEAR_OF_BIRTH=1970 CODE=987654 ... node cli.js
+```
+
+Una vez ejecutado ya tenemos el informe en nuestra bandeja de entrada. Sencillo, ¿verdad?.
 
 
 ### Documentation TODOs
-- [ ] Nodemailer for sending email - gmail unsecure app
 - [ ] Deploy to aws
 - [ ] Deploy without serverless
 - [ ] Dependencies & size limits & lambda layer
