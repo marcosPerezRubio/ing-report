@@ -222,7 +222,7 @@ la captura de pantalla.
 En la función **screenshotDOMElement**, dado un selector y un path, se genera una imagen y se almacena en el sistema de ficheros. Esta 
 función la he conseguido de [Serg Hosporadets](https://gist.github.com/malyw/b4e8284e42fdaeceab9a67a9b0263743), funciona perfectamente y 
 así, evito reinventar la rueda 😉. La imagen la guardamos en la carpeta **tmp** para poder acceder a ella también desde la función Lambda, 
-tal y como se explica en la [documentación](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-context.html). 
+tal y como se explica en la [documentación de AWS](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-context.html). 
 
 <img src="assets/code/screenshotDOMElement.png">
 
@@ -245,15 +245,20 @@ Toda esta lógica se encuentra en el fichero [email.js](./lib/utils/email.js).
 Ahora que tenemos todo el proceso claro, veamos como empezar con este proyecto desde cero. 
 
 
-Primero, tenemos que instalar las dependencias necesarias:
+Primero, tenemos que instalar las dependencias necesarias, la forma más directa sería ejecutar:
 
+
+```
+npm i
+```
+
+Pero veamos las dependencias paso a paso:
 
 Instalamos puppeteer para poder realizar el scrapping. Debido a que se descarga el binario de Chromium, esto 
 puede tardar un poco, así que tened paciencia.
 ```
 npm install --save puppeteer 
 ```
-
 
 También debemos instalar la librería de utilidad para trabajar con el shadowDOM de forma transparente.
 ```
