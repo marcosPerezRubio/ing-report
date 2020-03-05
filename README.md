@@ -288,7 +288,7 @@ Con esto definido, el comando quedaría algo parecido a la siguiente línea (nó
 DNI=123123123A DAY_OF_BIRH=01 MONTH_OF_BIRTH=01 YEAR_OF_BIRTH=1970 CODE=987654 ... node cli.js
 ```
 
-Una vez ejecutado ya tenemos el informe en nuestra bandeja de entrada. Sencillo, ¿verdad?.
+Una vez ejecutado ya tenemos el informe en nuestra bandeja de entrada. Sencillo ¿verdad?.
 
 
 ### Documentation TODOs
