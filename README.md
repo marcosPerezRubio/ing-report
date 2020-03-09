@@ -6,14 +6,14 @@ A simple project that login to the Ing website and sends an email report with th
 Hace unos meses empecé a interesarme en lo relativo a la educación financiera con el objetivo de aumentar la capacidad de ahorro y ser más consciente de los gastos diarios.
 
 Después de estar probando excels de presupuestos y aplicaciones varias, decidí utilizar el método propuesto por **YouNeedABudget** que se basa en asignar a cada euro un "uso":
-ya sea para la compra en el supermercado, las vacaciones, los estudios, a modo de ejemplo. De esta forma cuando tengamos que hacer un gasto imprevisto, tendremos que retirar ese dinero de alguno de los presupuestos ya realizados y por ende, seremos 
+ya sea para la compra en el supermercado, las vacaciones o los estudios, a modo de ejemplo. De esta forma cuando tengamos que hacer un gasto imprevisto tendremos que retirar ese dinero de alguno de los presupuestos ya realizados y por ende, seremos 
 más conscientes de cómo y en qué invertimos el dinero.
 
-Si bien la teoría es interesante, a la práctica es un método que requiere mucho tiempo, por lo que decidí enfocarlo de otra forma: 
+Si bien la teoría es interesante, a la práctica es un método que requiere mucho tiempo por lo que decidí enfocarlo de otra forma: 
 conocer el gasto actual para corregir las desviaciones y tener un mayor control sobre el dinero disponible.
 Por ello, decidí automatizar el proceso de consulta creando un programa que inicia sesión en la web de mi banco (ING) y 
 genera un informe de gastos que se envía cada semana por correo. Este informe incluye el total disponible en la cuenta 
-y un resumen de lo que he gastado el mes actual, agrupado por categorías.
+y un resumen de lo que se ha gastado el mes actual, agrupado por categorías. 
 
 De esta forma, recibo en mi bandeja de entrada la evolución de mis gastos, sin necesidad de entrar en la web del banco.
 
@@ -31,7 +31,7 @@ Para iniciar sesión en la web de ING y acceder a nuestro área de clientes debe
 <img src="./assets/proceso_login_ing.png" width="500" height="300">
 
 
-Ya en el dashboard principal, aprovechamos para guardanos el balance actual.
+Ya en el dashboard principal, aprovechamos para guardarnos el balance actual.
 
 <img src="./assets/dashboard_principal.png" width="500" height="400">
 
@@ -61,7 +61,7 @@ para seleccionar los elementos HTML de una web.
   
 De esta forma, utilizando Puppeteer y el DOM, podremos programar el comportamiento que deseemos.
 
-En este proyecto el primero paso es rellenar el formulario de inicio de sesión rellenando la información sobre el DNI y la fecha de nacimiento,
+En este proyecto el primero paso es rellenar el formulario de inicio de sesión introduciendo la información sobre el DNI y la fecha de nacimiento,
 por lo que vamos a inspeccionar el código de la web para conocer la información del formulario:
 
 <img src="./assets/inspeccionar_login.png" width="300" height="300">
@@ -101,7 +101,7 @@ Como es de suponer, esto no es ágil ni cómodo de gestionar dado que cada vez q
 esta línea de código... ¡Y esto sólo para un único elemento!
 
 Cómo seguramente no soy la primera persona del mundo con este problema, me puse a buscar cómo solucionarlo y encontré la librería 
-[query-selector-shadow-dom](https://www.npmjs.com/package/query-selector-shadow-dom) que se encarga de encontrar los elementos sin 
+[query-selector-shadow-dom](https://www.npmjs.com/package/query-selector-shadow-dom) que se encarga de buscar los elementos sin 
 necesidad de especificar el camino completo. Tan sólo tenemos que instalar la librería, cargarla en Puppeteer y utilizar las funciones que nos proporcionan.
 En el fichero [shadow-dom-utils.js](./lib/utils/shadow-dom-utils.js) encontraréis varias funciones de utilidad que abstraen la lógica de leer y escribir en elementos HTML en el shadow DOM.
 
@@ -119,7 +119,7 @@ página del tamaño que queramos y cargar la URL que nos interesa.
 
 <img src="assets/code/init_page.png" width="400">
 
-La clave de esta función, está en cargar la librería que necesitaremos para consultar los elementos del Shadow DOM para tenerla disponible 
+La clave de esta función se encuentra en cargar la librería que necesitaremos para consultar los elementos del Shadow DOM para tenerla disponible 
 cuando sea necesario. Es importante cargarla una vez estemos en la URL que nos interesa para las funciones que nos proporciona sean accesibles.
 
 Como hemos instalado la librería con NPM, la encontraremos en la carpeta node_modules del proyecto. Concretamente, la instrucción 
@@ -129,27 +129,27 @@ para cargarla en el navegador es:
 ```
 
 A partir de aquí ya tenemos nuestra página inicializada y correctamente configurada. Hay que tener cuidado ya que si a lo largo del proceso
-decidiéramos navegar a otra URL tendríamos que cargar otra vez el script.
+decidiéramos navegar a otra URL, tendríamos que cargar otra vez el script.
 
 ### Login: La función doLogin
 Ahora ya estamos frente al formulario de login en el que tenemos que insertar nuestros datos personales y pulsar el botón de "Entrar".
 Para ello, utilizamos las funciones de utilidad que comentaba anteriormente. Como podéis ver el código sigue siendo autoexplicativo a 
 excepción de la primera línea, dónde esperamos tres segundos para asegurarnos que la web ha acabado de cargar. Idealmente, esto lo haríamos
 con alguno de los métodos que proporciona Puppeteer, pero debido al shadow dom, el resultado no es tan elegante como cabría esperar. 
-Por ello, decido utilizar esta técnica, que si bien no es la más eficiente, es la que más legibilidad proporciona.
+Por ello, decido utilizar esta técnica, que si bien no es la más eficiente, es la más legible.
 
-Como la seguridad es uno de los aspectos más importantes a tener en cuenta, y tampoco quiero compartir mis datos bancarios con todo el mundo
-las variables referentes a la información personal, se definen utilizando variables de entorno, por lo que no están en el código 
+Como la seguridad es uno de los aspectos más importantes a tener en cuenta, y tampoco quiero compartir mis datos bancarios con todo el mundo,
+las variables referentes a la información personal se definen utilizando variables de entorno por lo que no están en el código 
 y no son accesibles a terceras personas. Más adelante explicaremos cómo hacerlo. 
 
 <img src="assets/code/do_login.png">
 
 ### Código de seguridad: La función fillSecurityCode
-Este quizás es uno de los puntos más interesantes del proyecto ya que parece la medida estrella en múltiples plataformas:
+Este es uno de los puntos más interesantes del proyecto ya que parece la medida estrella en múltiples plataformas:
 introducir unos dígitos concretos de una clave que sólo sabemos nosotros y que van cambiando en cada intento. Además, en este caso, tenemos 
 que utilizar el teclado que nos proporciona ING, que también va cambiando.
 
-Si planteamos este proceso de la misma forma que lo haríamos cuando queremos entrar utilizando la aplicación llegaríamos al siguiente algoritmo:
+Si planteamos este proceso de la misma forma que lo haríamos cuando queremos entrar utilizando la aplicación, llegaríamos al siguiente algoritmo:
 - Conocer qué posiciones de nuestra clave nos están pidiendo
 - Para cada posición, pensar en el dígito equivalente de nuestro clave.
 - Buscar el dígito en el teclado y pulsarlo.
@@ -221,7 +221,7 @@ la captura de pantalla.
 
 En la función **screenshotDOMElement**, dado un selector y un path, se genera una imagen y se almacena en el sistema de ficheros. Esta 
 función la he conseguido de [Serg Hosporadets](https://gist.github.com/malyw/b4e8284e42fdaeceab9a67a9b0263743), funciona perfectamente y 
-así, evito reinventar la rueda 😉. La imagen la guardamos en la carpeta **tmp** para poder acceder a ella también desde la función Lambda, 
+así evito reinventar la rueda 😉. La imagen la guardamos en la carpeta **tmp** para poder acceder a ella también desde la función Lambda, 
 tal y como se explica en la [documentación de AWS](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-context.html). 
 
 <img src="assets/code/screenshotDOMElement.png">
@@ -288,8 +288,14 @@ Con esto definido, el comando quedaría algo parecido a la siguiente línea (nó
 DNI=123123123A DAY_OF_BIRH=01 MONTH_OF_BIRTH=01 YEAR_OF_BIRTH=1970 CODE=987654 ... node cli.js
 ```
 
-Una vez ejecutado ya tenemos el informe en nuestra bandeja de entrada. Sencillo, ¿Verdad?. 
+Una vez ejecutado ya tenemos el informe en nuestra bandeja de entrada. Sencillo, ¿Verdad?.
 
+
+## Ejecutar el código en el ☁
+Como comentaba anteriormente, para poner el código en producción utilizaremos el servicio AWS Lambda y haremos el 
+deploy sin utilizar dependencias externas, como podría ser Serverless, que aunque sea un framework excelente, añade una capa a 
+la gestión de nuestro código que no necesitamos.
+ 
 ### Documentation TODOs
 - [ ] Deploy to aws
 - [ ] Deploy without serverless
