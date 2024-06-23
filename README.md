@@ -292,20 +292,64 @@ Una vez ejecutado ya tenemos el informe en nuestra bandeja de entrada. Sencillo,
 
 
 ## Ejecutar el código en el ☁
-Como comentaba anteriormente, para poner el código en producción utilizaremos el servicio AWS Lambda y haremos el 
-deploy sin utilizar dependencias externas, como podría ser Serverless, que aunque sea un framework excelente, añade una capa a 
-la gestión de nuestro código que no necesitamos.
+Para poner el código en producción utilizaremos el servicio AWS Lambda y unos scripts muy sencillos que automatizan todo el proceso de publicar el código. 
+Podríamos utilizar algún framework como Serverless, pero aun siendo una herramienta excelente, añade una capa de gestión que creo innecesaria.
+
+AWS Lambda nos permite ejecutar funciones bajo demanda (en contenedores) sin necesidad de alojarlas en un servidor, despreocupándonos así de la 
+infraestructura y ahorrando en costes gracias al modelo de pago basado en función de:
+ - El número de ejecuciones de la función
+ - El tiempo de ejecución
+ - La memoria RAM que le asignemos (que repercute en el punto anterior).
+Por tanto, siempre que programemos una función será muy importante que ajustemos estos parámetros para sacar el máximo provecho a cada céntimo.
+
+Como nuestro objetivo es recibir un correo por semana tan solo serían necesarias cuatro ejecuciones al mes, por lo que el coste
+ será mucho menor en comparación al de tener una máquina ejecutándose 24/7 y las preocupaciones por el mantenimiento desaparecen. 
+Además tenemos la capa gratuita para siempre, que consiste en 1.000.000 de invocaciones gratis por mes.
+
+**Extra**:
+Aunque no sea de interés en este caso en concreto, cuando trabajemos con Lambda debemos tener en cuenta que la primera vez 
+que ejecutamos una función hay un tiempo de inicialización que provocará que la ejecución sea más larga de lo normal. A este fenómeno se le llama *cold start* 
+y ocurre cada vez que se ejecuta una función que no lo había sido recientemente (en los últimos 5 - 25 minutos). 
+Generalmente las siguientes ejecuciones serán inmediatas, por lo que ya no se nos facturarían esos segundos de inicialización. En las referencias, os dejo un artículo que ahonda 
+más en estos detalles.
  
-### Documentation TODOs
-- [ ] Deploy to aws
-- [ ] Deploy without serverless
-- [ ] Dependencies & size limits & lambda layer
-- [ ] Schedule with cloudwatch events
-- [ ] Bash scripts utils
+No quiero entrar en muchos detalles sobre como se gestiona el código en AWS Lambda ya que hay una documentación estupenda para ello, pero si que resaltaré 
+los puntos que creo que son más interesantes.
+
+Dividiremos el proceso en varias partes:
+
+### Subir y ejecutar el código en Lambda
+- Una función Lambda creada: esto lo podemos hacer vía comandos utilizando awscli o desde la misma web. 
+- Un .zip que contenga nuestro código y las dependencias necesarias.
+
+He llamado a la función *ing-report* y le he asignado el entorno de ejecución de Node v.12 y unos permisos básicos de ejecución.
+
+Una vez en el dashboard de Lambda, veremos varias secciones de las cuales me gustaría resaltar:
+
+**Apartado de diseño:** aquí podemos configurar qué desencadenadores ejecutan la función y con qué destinos interactuamos. 
+
+**Código de la función:** Este editor nos permite desarrollar código directamente desde la web, pero también modificar el que hayamos publicado 
+desde nuestro repositorio de git, por ejemplo, siempre y cuando no supere el límite de 3MB.
+
+**Rol de ejecución y Configuración básica:** En estos apartados, podremos cambiar los permisos de la función Lambda, por si tenemos que interactuar 
+
+con otros servicios y parametrizar las opciones de ejecución que comentábamos anteriormente (memoria, tiempo máximo de ejecución...).
+
+
+
+Problemas con el tamaño de las dependencias
+AWS Lambda Layer
+
+### CloudWatch Events
+- Ejecutar la función con un CRON, ya que no tenemos el del servidor.
+
+## Recap
 
 ### Referencias
 - [GitHub - Better support for Shadow DOM](https://github.com/puppeteer/puppeteer/issues/4171)
 - [GitHub - Querying nodes within shadow roots](https://github.com/puppeteer/puppeteer/issues/858)
+- [Lambda costs](https://aws.amazon.com/es/lambda/pricing/)
+- [AWS Lambda Cold Start Language Comparisons](https://levelup.gitconnected.com/aws-lambda-cold-start-language-comparisons-2019-edition-%EF%B8%8F-1946d32a0244)
 
 ### Project TODOs
 - [ ] Enviar un informe más completo a cierre del mes
